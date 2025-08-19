@@ -16,7 +16,7 @@ export default function LoginPage() {
     let un = email,
       pw = password;
     let { ENDPOINT } = config;
-    const res = await axios.post(`${ENDPOINT}/api/login`, { un, pw });
+    const res = await axios.post(`${ENDPOINT}/login`, { un, pw });
     console.log("res", res.data);
     if (res.data.success) {
       setError(null);
