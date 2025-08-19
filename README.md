@@ -12,6 +12,10 @@ Then, build the React App:
 
 ### `npm run build`
 
+You may need to install react-scripts:
+
+### `npm install react-scripts --save`
+
 If you want to change the endpoints in the backend/setup.json file, these are send to the public/setup.json file when you run the backend. That is the reason you might run the backend before the React build, since the build copies the public/setup.json file.
 
 The database Credentials

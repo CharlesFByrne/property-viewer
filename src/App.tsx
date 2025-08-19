@@ -10,7 +10,6 @@ import "./login.css";
 
 function App() {
   const config = useConfig();
-  if (!config) return <div>Loading config...</div>;
   useEffect(() => {
     fetch("/setup.json")
       .then((res) => res.json())
@@ -18,6 +17,7 @@ function App() {
         console.log("Loaded config:", config);
       });
   }, []);
+  if (!config) return <div>Loading config...</div>;
 
   useEffect(() => {
     fetch("/setup.json")
