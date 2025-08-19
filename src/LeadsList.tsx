@@ -299,12 +299,15 @@ const LeadsList: React.FC<LeadsListProps> = ({
         </thead>
         <tbody>
           {leads.map((lead, index) => {
-            const isEditing = editingLeadID === lead.id;
+            const isEditing = !forSelection && editingLeadID === lead.id;
             const invite = invites.find((inv) => inv.lead_id === lead.id);
             const status = invite?.status;
+            const accepted = status === "accepted";
 
             const rowClass = isEditing
               ? "editing"
+              : accepted
+              ? "accepted"
               : invite
               ? "invited"
               : selectedRows.includes(lead.id!)
@@ -325,8 +328,6 @@ const LeadsList: React.FC<LeadsListProps> = ({
                 }}
               >
                 <td>
-                  {" "}
-                  {lead.id}
                   {isEditing ? (
                     <div
                       className="input-wrapper"

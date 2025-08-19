@@ -112,7 +112,13 @@ const InviteModal: React.FC<InviteModalProps> = ({
             <span style={{ color: "red" }}> This viewing is full.</span>
           )}
         </p>
-        {!fullUp && <p>Click Lead to select...</p>}
+        {!fullUp && (
+          <span>
+            <p>
+              <b>Click Lead to select...</b>
+            </p>
+          </span>
+        )}
 
         <div className="leads-wrapper">
           <LeadsList
