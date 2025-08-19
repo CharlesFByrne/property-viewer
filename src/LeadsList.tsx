@@ -210,6 +210,7 @@ const LeadsList: React.FC<LeadsListProps> = ({
         }
       }
     }
+    setInEditingMode(false);
     setEditingLeadID(null);
     clearFormData();
   };

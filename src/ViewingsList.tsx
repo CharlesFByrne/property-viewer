@@ -266,6 +266,7 @@ const ViewingsList: React.FC<ViewingsListProps> = ({
     }
     setEditingViewingID(null);
     clearFormData();
+    setInEditingMode(false);
   };
 
   useEffect(() => {
