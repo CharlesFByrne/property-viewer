@@ -2,11 +2,12 @@
 import React, { useEffect, useState } from "react";
 import { Lead, Invite, InviteStatus } from "./types";
 import axios from "axios";
-import "./App.css";
-import "./table.css";
+import { useConfigContext } from "./ConfigContext";
 import editGif from "./assets/edit.gif";
 import deleteGif from "./assets/delete.gif";
 import DeleteModal from "./DeleteModal";
+import "./App.css";
+import "./table.css";
 
 interface EditableLead extends Lead {
   isNew?: boolean; // optional, only used in the UI
@@ -59,6 +60,7 @@ const LeadsList: React.FC<LeadsListProps> = ({
   setLeads = () => {},
   fullUp = false,
 }) => {
+  const config = useConfigContext();
   const [selectedToDelete, setSelectedToDelete] = useState<Lead>();
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
 
@@ -173,9 +175,10 @@ const LeadsList: React.FC<LeadsListProps> = ({
       : leads.findIndex((lead) => lead.id === editingLeadID);
 
     if (index != -1) {
+      let { ENDPOINT } = config;
       try {
         const res = await axios.post(
-          `http://localhost:5000/api/leads/${job}`,
+          `${ENDPOINT}/leads/${job}`,
           { lead },
           {
             headers: {

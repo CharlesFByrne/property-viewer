@@ -2,6 +2,7 @@ import { useParams } from "react-router-dom";
 import React, { useEffect, useState } from "react";
 import axios from "axios";
 import { printDateTime } from "./utils";
+import { useConfigContext } from "./ConfigContext";
 
 export default function EmailPreview() {
   const { leadID = "", viewingID = "" } = useParams<{
@@ -18,11 +19,13 @@ export default function EmailPreview() {
     viewing_name: string;
   }
 
+  const config = useConfigContext();
+  const { ENDPOINT } = config;
   const [invite, setInvite] = useState<Invitation>();
 
   const fetchInvite = async (viewingID: string, leadID: string) => {
     const res = await axios.post(
-      `http://localhost:5000/api/invites/fetch_one`,
+      `${ENDPOINT}/invites/fetch_one`,
       { leadID, viewingID },
       {
         headers: {

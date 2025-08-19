@@ -1,7 +1,6 @@
 import express from "express";
 import { join, dirname } from "path";
 import { fileURLToPath } from "url";
-import { hashSync, compareSync } from "bcryptjs";
 import { compare, genSalt, hash } from "./encryption.js";
 import { promises } from "fs";
 import { init } from "./database.js";
@@ -11,10 +10,6 @@ import { colorPrint, printDateTime, generateUniqueID } from "./utils.js";
 // Fix __dirname for ESM
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
-
-const ENABLE_EMAIL_SENDING = false;
-const DEFAULT_EMAIL_SENDER_ADDRESS = "sender_email_here";
-const ENDPOINT_FOR_EMAIL = "http://localhost:5000";
 
 const VIEWINGS_TABLE = {
   name: "viewings2",
@@ -55,18 +50,19 @@ const USERS_TABLE = {
   definition: [`id TEXT`, `email TEXT`, `pw TEXT`],
 };
 
-let EMAIL_SETTINGS = await loadConfig("./email_credentials.json");
+let CONFIG = await loadSetupJSON("./setup.json");
+await writeEndpointForFrontEnd();
 
 const app = express();
-let pool = await init();
+let pool = await init(CONFIG.database);
 await createTablesIfNeeded();
 
 // ==================================================================
 
-async function loadConfig(CONFIG_PATH_AND_FILE) {
+async function loadSetupJSON(CONFIG_PATH_AND_FILE) {
   try {
     const raw = await promises.readFile(CONFIG_PATH_AND_FILE, "utf-8");
-    console.log(`✅ Loaded email credentials from: ${CONFIG_PATH_AND_FILE}`);
+    console.log(`✅ Loaded setup.json from: ${CONFIG_PATH_AND_FILE}`);
     return JSON.parse(raw);
   } catch (err) {
     console.warn(
@@ -77,6 +73,25 @@ async function loadConfig(CONFIG_PATH_AND_FILE) {
 
   console.error(`❌ Could not find ${CONFIG_PATH_AND_FILE}.`);
   process.exit(1);
+}
+
+async function writeEndpointForFrontEnd() {
+  const frontend_setup_JSON = `{
+  "PORT": ${CONFIG.DEFAULT_PORT},
+  "ENDPOINT": "${CONFIG.BACKEND_ENDPOINT}",
+  "ENDPOINT_FOR_EMAIL": "${CONFIG.ENDPOINT_FOR_EMAIL}"
+   }`;
+  let FRONTEND_DIRECTORY = "../public";
+  try {
+    await promises.writeFile(
+      `${FRONTEND_DIRECTORY}/setup.json`,
+      frontend_setup_JSON
+    );
+    console.log("FRONTEND_DIRECTORY", FRONTEND_DIRECTORY);
+    colorPrint("green", `${FRONTEND_DIRECTORY}'/setup.json' file written.`);
+  } catch (err) {
+    colorPrint("red", `${FRONTEND_DIRECTORY}'/setup.json' file not written.`);
+  }
 }
 
 async function createTableIfNotExists(table) {
@@ -199,7 +214,9 @@ async function generateEmail(viewingID, leadID) {
 
           <p>
             <a
-              href="${ENDPOINT_FOR_EMAIL}/confirm-invite/${leadID}/${viewingID}"}
+              href="${
+                CONFIG.ENDPOINT_FOR_EMAIL
+              }/confirm-invite/${leadID}/${viewingID}"}
               target="_blank"
               rel="noopener noreferrer"
               className="text-blue-600 underline"
@@ -219,21 +236,21 @@ async function generateEmail(viewingID, leadID) {
 }
 
 async function sendEmails(viewingID, leads_to_email) {
-  let { email_credentials } = EMAIL_SETTINGS;
+  let { email_credentials } = CONFIG;
   console.log("leads_to_email", email_credentials, leads_to_email);
   let emails_sent;
-  if (ENABLE_EMAIL_SENDING) {
+  if (CONFIG.ENABLE_EMAIL_SENDING) {
     for (let i = 0; i < leads_to_email.length; i++) {
       let this_lead = leads_to_email[i];
 
       let leadID = this_lead.id;
       let this_email = await generateEmail(viewingID, leadID);
-      let send_to_this_email = "pianoDrogheda@gmail.com"; //this_lead.email;
+      let send_to_this_email = this_lead.email;
       let mailOptions = {
         from:
           email_credentials?.auth?.user ??
-          DEFAULT_EMAIL_SENDER_ADDRESS ??
-          DEFAULT_EMAIL_SENDER_ADDRESS,
+          CONFIG.DEFAULT_EMAIL_SENDER_ADDRESS ??
+          CONFIG.DEFAULT_EMAIL_SENDER_ADDRESS,
         to: send_to_this_email,
         subject: this_email.subject,
         html: this_email.body,
@@ -260,6 +277,7 @@ async function createTablesIfNeeded() {
     let user_pass = "password";
     const salt = await genSalt();
     const hashedPW = await hash(user_pass, salt);
+    // ADD A TEST USERNAME AND PASSWORD:
     await addTableRecord(USERS_TABLE.name, {
       email: "test@user.com",
       pw: hashedPW,
@@ -664,7 +682,7 @@ app.post("/api/login", async (req, res) => {
   }
 });
 
-const port = process.env.PORT || 5000;
+const port = process.env.PORT || CONFIG.DEFAULT_PORT;
 app.listen(port, () => {
   console.log(`Server running on port ${port}`);
 });

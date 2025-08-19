@@ -3,10 +3,16 @@ import axios from "axios";
 import TopBar from "./TopBar";
 import ViewingsList from "./ViewingsList";
 import LeadsList from "./LeadsList";
-import { Viewing, Lead } from "./types";
-import LeadsForm from "./LeadsForm";
+import { Viewing, Lead, AppConfig } from "./types";
+import { useConfigContext } from "./ConfigContext";
+
+interface InviteModalProps {
+  config: AppConfig | null;
+}
 
 function App() {
+  const config = useConfigContext();
+  const { ENDPOINT } = config;
   const [currentPage, setCurrentPage] = useState<"viewings" | "assign">(
     "viewings"
   );
@@ -21,7 +27,7 @@ function App() {
   const fetchTables = async () => {
     try {
       const res = await axios.post<TablesResponse>(
-        "http://localhost:5000/api/get_tables"
+        `${ENDPOINT}/get_tables` // http://localhost:5000/api/get_tables"
       );
       console.log("res", res.data);
       setViewings(res.data.viewings);

@@ -1,0 +1,22 @@
+{
+  "DEFAULT_PORT": 5000,
+  "BACKEND_ENDPOINT": "http://localhost:5000/api",
+  "DATABASE_CREDENTIALS": {
+    "databaseType": "Postgres",
+    "user": "Postgres",
+    "host": "localhost",
+    "database": "Postgres",
+    "password": "Postgres",
+    "port": 5432
+  },
+  "email_credentials": {
+    "service": "gmail",
+    "auth": {
+      "user": "sender@email.here",
+      "pass": "password_here"
+    }
+  },
+  "ENABLE_EMAIL_SENDING": false,
+  "DEFAULT_EMAIL_SENDER_ADDRESS": "sender_email_here",
+  "ENDPOINT_FOR_EMAIL": "http://localhost:5000"
+}

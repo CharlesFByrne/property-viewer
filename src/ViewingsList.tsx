@@ -9,6 +9,7 @@ import editGif from "./assets/edit.gif";
 import deleteGif from "./assets/delete.gif";
 import DeleteModal from "./DeleteModal";
 import InviteModal from "./InviteModal";
+import { useConfigContext } from "./ConfigContext";
 
 const DEFAULT_MAX_ATTENDEES = 5;
 
@@ -47,6 +48,8 @@ const ViewingsList: React.FC<ViewingsListProps> = ({
   setViewings,
   leads,
 }) => {
+  const config = useConfigContext();
+
   const [selectedToDelete, setSelectedToDelete] = useState<Viewing>();
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
 
@@ -225,9 +228,10 @@ const ViewingsList: React.FC<ViewingsListProps> = ({
       : viewings.findIndex((lead) => lead.id === editingViewingID);
 
     if (index != -1) {
+      let { ENDPOINT } = config;
       try {
         const res = await axios.post(
-          `http://localhost:5000/api/viewings/${job}`,
+          `${ENDPOINT}/viewings/${job}`,
           { viewing },
           {
             headers: {

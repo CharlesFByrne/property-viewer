@@ -1,9 +1,11 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
+import { useConfigContext } from "./ConfigContext";
 import "./login.css";
 
 export default function LoginPage() {
+  const config = useConfigContext();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState<string | null>(null);
@@ -13,7 +15,8 @@ export default function LoginPage() {
     e.preventDefault();
     let un = email,
       pw = password;
-    const res = await axios.post("http://localhost:5000/api/login", { un, pw });
+    let { ENDPOINT } = config;
+    const res = await axios.post(`${ENDPOINT}/api/login`, { un, pw });
     console.log("res", res.data);
     if (res.data.success) {
       setError(null);

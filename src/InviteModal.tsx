@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import { Viewing, Lead, InviteStatus } from "./types";
 import axios from "axios";
 import LeadsList from "./LeadsList";
+import { useConfigContext } from "./ConfigContext";
 import "./App.css";
 
 interface InviteModalProps {
@@ -17,16 +18,16 @@ const InviteModal: React.FC<InviteModalProps> = ({
   viewing,
   leads,
 }) => {
+  const config = useConfigContext();
+  const { ENDPOINT } = config;
   const [selectedRows, setSelectedRows] = useState<string[]>([]);
   const [leadsToEmail, setLeadsToEmail] = useState<string[]>([]);
   const [invites, setInvites] = useState<InviteStatus[]>([]);
 
-  //    const canSendEmails = invites.some(invite => invite.status === 'send_email');
-
   const fetchInvites = async (viewing_id: string) => {
     try {
       const res = await axios.post(
-        "http://localhost:5000/api/invites/fetch",
+        `${ENDPOINT}/invites/fetch`,
         { viewing_id },
         {
           headers: {
@@ -35,14 +36,7 @@ const InviteModal: React.FC<InviteModalProps> = ({
         }
       );
 
-      // const res = await fetch(`http://localhost:5000/api/get_invites`, {
-      //   method: 'POST',
-      //   headers: { 'Content-Type': 'application/json' },
-      //   body: JSON.stringify({ selectedViewing }),
-      // });
       console.log("get_invites res", res.data);
-      // const invitedIds = new Set(invites.map(invite => res.data.lead_id));
-
       setInvites(res.data.invites);
     } catch (error) {
       console.error("Error fetching tables:", error);
@@ -68,7 +62,7 @@ const InviteModal: React.FC<InviteModalProps> = ({
     console.log("selectedRows", selectedRows);
     let leadIDs = selectedRows;
     try {
-      const res = await axios.post(`http://localhost:5000/api/invites/mark`, {
+      const res = await axios.post(`${ENDPOINT}/invites/mark`, {
         leadIDs,
         viewing_id: viewing.id,
       });
@@ -85,7 +79,7 @@ const InviteModal: React.FC<InviteModalProps> = ({
     console.log("selectedRows", selectedRows);
     let leadIDs = leadsToEmail;
     try {
-      const res = await axios.post("http://localhost:5000/api/invites/email", {
+      const res = await axios.post(`${ENDPOINT}/invites/email`, {
         leadIDs,
         viewing_id: viewing.id,
       });

@@ -1,8 +1,10 @@
 import { useParams } from "react-router-dom";
 import { useEffect, useState } from "react";
+import { useConfigContext } from "./ConfigContext";
 import axios from "axios";
 
 export default function ConfirmInvite() {
+  const config = useConfigContext();
   const { leadID, viewingID } = useParams<{
     leadID: string;
     viewingID: string;
@@ -13,9 +15,10 @@ export default function ConfirmInvite() {
 
   useEffect(() => {
     async function confirm() {
+      let { ENDPOINT } = config;
       try {
         const res = await axios.post(
-          `http://localhost:5000/api/invites/confirm/${leadID}/${viewingID}`,
+          `${ENDPOINT}/invites/confirm/${leadID}/${viewingID}`,
           {
             method: "POST",
           }

@@ -23,3 +23,9 @@ export interface InviteStatus {
   lead_id: string;
   status: "send_email" | "invited" | "accepted" | "attended" | "did_not_show";
 }
+
+export interface AppConfig {
+  PORT: number;
+  ENDPOINT: string;
+  ENDPOINT_FOR_EMAIL: string;
+}

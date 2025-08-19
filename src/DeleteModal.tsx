@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import { Viewing, Lead, InviteStatus } from "./types";
 import { printDateTime } from "./utils";
 import axios from "axios";
+import { useConfigContext } from "./ConfigContext";
 import "./App.css";
 
 // Types for each mode (no generics)
@@ -27,6 +28,9 @@ type DeleteModalProps = LeadDeleteModalProps | ViewingDeleteModalProps;
 
 const DeleteModal: React.FC<DeleteModalProps> = (props) => {
   const { leadOrViewing, isOpen, onClose, targetID } = props;
+
+  const config = useConfigContext();
+  const { ENDPOINT } = config;
   if (!isOpen) return null;
 
   // Find the record safely even if id can be null
@@ -60,9 +64,9 @@ const DeleteModal: React.FC<DeleteModalProps> = (props) => {
 
     try {
       const endpoint = leadOrViewing === "lead" ? "leads" : "viewings";
-      console.log(`http://localhost:5000/api/${endpoint}/delete`, targetID);
+      console.log(`${ENDPOINT}/${endpoint}/delete`, targetID);
       await axios.post(
-        `http://localhost:5000/api/${endpoint}/delete`,
+        `${ENDPOINT}/${endpoint}/delete`,
         { id: targetID },
         { headers: { "Content-Type": "application/json" } }
       );
