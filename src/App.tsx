@@ -17,7 +17,6 @@ function App() {
         console.log("Loaded config:", config);
       });
   }, []);
-  if (!config) return <div>Loading config...</div>;
 
   useEffect(() => {
     fetch("/setup.json")
@@ -26,6 +25,8 @@ function App() {
         console.log("Loaded config:", config);
       });
   }, []);
+
+  if (!config) return <div>Loading config...</div>;
 
   return (
     <ConfigProvider config={config}>
