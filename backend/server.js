@@ -12,7 +12,7 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
 
 const VIEWINGS_TABLE = {
-  name: "viewings2",
+  name: "property_viewings",
   definition: [
     `id TEXT`,
     `name TEXT`,
@@ -24,7 +24,7 @@ const VIEWINGS_TABLE = {
   ],
 };
 const LEADS_TABLE = {
-  name: "leads",
+  name: "property_leads",
   definition: [
     `id TEXT`,
     `first_name TEXT`,
@@ -34,7 +34,7 @@ const LEADS_TABLE = {
   ],
 };
 const INVITES_TABLE = {
-  name: "invites",
+  name: "property_invites",
   definition: [
     // `id TEXT`,
     `viewing_id TEXT REFERENCES ${VIEWINGS_TABLE.name}(id) ON DELETE CASCADE`,
@@ -539,7 +539,8 @@ app.post("/api/viewings/add", async (req, res) => {
   if (result.error) {
     res.status(500).json({ error: "Database error", details: result.error });
   } else {
-    res.json({ error: null, result });
+    let { new_id } = result;
+    res.json({ error: null, new_id });
   }
 });
 

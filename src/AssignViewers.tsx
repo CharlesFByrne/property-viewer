@@ -1,17 +1,20 @@
-import { useState } from 'react';
-import { Viewing } from './types';
+import { useState } from "react";
+import { Viewing } from "./types";
 
 interface AssignViewersProps {
   viewings: Viewing[];
   setViewings: (v: Viewing[]) => void;
 }
 
-export default function AssignViewers({ viewings, setViewings }: AssignViewersProps) {
+export default function AssignViewers({
+  viewings,
+  setViewings,
+}: AssignViewersProps) {
   const [formData, setFormData] = useState({
     id: null,
-    name: '',
-    location: '',
-    date_and_time: '',
+    name: "",
+    location: "",
+    date_and_time: "",
     max_attendees: 1,
   });
 
@@ -19,12 +22,10 @@ export default function AssignViewers({ viewings, setViewings }: AssignViewersPr
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
-
-  };
+  const handleSubmit = (e: React.FormEvent) => {};
 
   return (
-    <div style={{ padding: '20px' }}>
+    <div style={{ padding: "20px" }}>
       <h2>Assign Viewers / Add Viewing</h2>
       <form onSubmit={handleSubmit}>
         <input

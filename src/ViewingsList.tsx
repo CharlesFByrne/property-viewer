@@ -123,6 +123,7 @@ const ViewingsList: React.FC<ViewingsListProps> = ({
     }
 
     if (inEditingMode) {
+      console.log("CANCEL 125");
       cancelEditing();
     }
     setErrors({});
@@ -143,7 +144,7 @@ const ViewingsList: React.FC<ViewingsListProps> = ({
   const [errors, setErrors] = useState<Errors>({});
 
   const cancelEditing = () => {
-    console.log("cancelEditing", editingViewingID);
+    console.log("cancelEditing", editingViewingID, backupViewing);
     let wasNewInsert = editingViewingID === null;
 
     if (wasNewInsert) {
@@ -225,8 +226,8 @@ const ViewingsList: React.FC<ViewingsListProps> = ({
 
     const index = isNewViewing
       ? 0
-      : viewings.findIndex((lead) => lead.id === editingViewingID);
-
+      : viewings.findIndex((item) => item.id === editingViewingID);
+    console.log("INDEX", index);
     if (index != -1) {
       let { ENDPOINT } = config;
       try {
@@ -240,20 +241,24 @@ const ViewingsList: React.FC<ViewingsListProps> = ({
           }
         );
 
-        console.log(`${job}ing lead result:`, res.data);
-        let fieldToChange = formData;
+        console.log(`${job}ing lead result:`, res.data, res.data);
+        let id: string | null;
         if (isNewViewing) {
-          let id = res.data.new_id;
+          id = res.data.new_id;
           console.log("id", id);
-          Object.assign(fieldToChange, { id });
+        } else {
+          id = editingViewingID;
         }
-        setViewings((prev) =>
-          prev.map((viewing) =>
-            viewing.id === editingViewingID
-              ? { ...viewing, ...formData }
-              : viewing
-          )
-        );
+        setViewings((prev) => {
+          const updated = [...prev];
+          updated[index] = {
+            ...formData,
+            id, // set new id
+          };
+          return updated;
+        });
+
+        setInEditingMode(false);
       } catch (error) {
         console.error(`Error ${job}ing viewing`, error);
         // rollback to backup if available
@@ -266,7 +271,6 @@ const ViewingsList: React.FC<ViewingsListProps> = ({
     }
     setEditingViewingID(null);
     clearFormData();
-    setInEditingMode(false);
   };
 
   useEffect(() => {
@@ -274,6 +278,7 @@ const ViewingsList: React.FC<ViewingsListProps> = ({
 
     const handleKeyDown = (e: KeyboardEvent) => {
       if (e.key === "Escape") {
+        console.log("CANCEL 286");
         cancelEditing();
       }
       if (e.key === "Enter") {
@@ -285,11 +290,6 @@ const ViewingsList: React.FC<ViewingsListProps> = ({
 
     return () => {
       window.removeEventListener("keydown", handleKeyDown);
-
-      // discard unsaved changes on unmount
-      if (inEditingMode) {
-        cancelEditing();
-      }
     };
   }, [inEditingMode]);
 

@@ -87,7 +87,8 @@ const LeadsList: React.FC<LeadsListProps> = ({
   const [backupLead, setBackupLead] = useState<Lead | null>(null);
 
   const startEditing = (lead: Lead) => {
-    if (inEditingMode) {
+    if (inEditingMode === true) {
+      console.log("in Edit mode");
       cancelEditing();
     }
     setErrors({});
@@ -138,7 +139,11 @@ const LeadsList: React.FC<LeadsListProps> = ({
   }
 
   const addNewLeadRow = () => {
-    if (inEditingMode) return;
+    console.log("addNewLeadRow inEditingMode", inEditingMode);
+    if (inEditingMode === true) {
+      console.log("already inEditMode");
+      return;
+    }
     setErrors({});
     const newLead: EditableLead = {
       id: null, // no id yet
@@ -160,7 +165,6 @@ const LeadsList: React.FC<LeadsListProps> = ({
       setErrors(validationErrors);
       return;
     }
-
     let isNewLead = editingLeadID === null;
     let job = isNewLead ? "add" : "edit",
       lead = {
@@ -188,17 +192,22 @@ const LeadsList: React.FC<LeadsListProps> = ({
         );
 
         console.log(`${job}ing lead result:`, res.data);
-        let fieldToChange = formData;
+        let id: string | null;
+        console.log("res.data", res.data);
         if (isNewLead) {
-          let id = res.data.new_id;
+          id = res.data.new_id;
           console.log("id", id);
-          Object.assign(fieldToChange, { id });
+        } else {
+          id = editingLeadID;
         }
-        setLeads((prev) =>
-          prev.map((lead) =>
-            lead.id === editingLeadID ? { ...lead, ...formData } : lead
-          )
-        );
+        setLeads((prev) => {
+          const updated = [...prev];
+          updated[index] = {
+            ...formData,
+            id, // set new id
+          };
+          return updated;
+        });
         closeModal();
       } catch (error) {
         console.error(`Error ${job}ing lead`, error);
@@ -237,11 +246,6 @@ const LeadsList: React.FC<LeadsListProps> = ({
 
     return () => {
       window.removeEventListener("keydown", handleKeyDown);
-
-      // discard unsaved changes on unmount
-      if (inEditingMode) {
-        cancelEditing();
-      }
     };
   }, [inEditingMode]);
 
@@ -321,6 +325,8 @@ const LeadsList: React.FC<LeadsListProps> = ({
                 }}
               >
                 <td>
+                  {" "}
+                  {lead.id}
                   {isEditing ? (
                     <div
                       className="input-wrapper"

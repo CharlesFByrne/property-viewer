@@ -50,6 +50,7 @@ export function printDateTime(dateString, friendlier = false) {
 }
 
 export function generateUniqueID(randomDigits = 2) {
+  // This can be made more complex, e.g., use of a counter also
   // now = milliseconds since the Unix epoch (January 1, 1970, 00:00:00 UTC).
   const timestamp = Date.now().toString(36); // Convert timestamp to Base-36
   const maxRandom = Math.pow(36, randomDigits); // Maximum value for n digits in Base-36

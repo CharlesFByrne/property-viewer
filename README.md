@@ -46,3 +46,11 @@ and then:
 ### `npm install nodemailer`
 
 ### `npm npm install bcryptjs`
+
+================================================
+
+Future Improvements:
+
+Automatic refresh of Viewings after n seconds (to account for accepted invitations)
+Edit Email and save to Database
+Update Attending in Viewings table when a lead is deleleted

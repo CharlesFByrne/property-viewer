@@ -30,3 +30,14 @@ export function printDateTime(dateString: string, friendlier = false) {
     thisDate.getMonth() + 1
   }/${thisDate.getFullYear()}${hoursAndMinutes}`;
 }
+
+export function generateUniqueID(randomDigits = 2) {
+  // This can be made more complex, e.g., use of a counter also
+  // now = milliseconds since the Unix epoch (January 1, 1970, 00:00:00 UTC).
+  const timestamp = Date.now().toString(36); // Convert timestamp to Base-36
+  const maxRandom = Math.pow(36, randomDigits); // Maximum value for n digits in Base-36
+  const randomPart = Math.floor(Math.random() * maxRandom)
+    .toString(36)
+    .padStart(randomDigits, "0"); // Random part in Base-36
+  return `${timestamp}${randomPart}`;
+}
